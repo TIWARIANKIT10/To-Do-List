@@ -52,12 +52,15 @@ function additem(e){
     }
     
     else if(value && editFlag===true){
-        editElement = addlist.value;
+        editElement.innerHTML = value;
 
+    
 
      
-        editlocalstorage(id,additem.value);
+        
+        editlocalstorage(editID, value)
      alerts("items edited","success");
+     setBackToDefault();
 
     }
     else{
@@ -79,7 +82,7 @@ function alerts(text,action){
     setTimeout(function(){
         alert.textContent="";
         alert.classList.toggle(`alert-${action}`);
-    },60);
+    },6000);
 }
 
 
@@ -108,17 +111,19 @@ function removeFromLocalStorage(id){
 
 
 }
-function editlocalstorage(id,value){
+function editlocalstorage(id, value) {
     let items = getlocalstorage();
-    items = items.map( function(item){
-        if(item.id==id){
-    item.value = value;
+    items = items.map(function(item) {
+        console.log(id)
+        if (item.id == id) {
+            item.value = value; // Update the value of the item
+            console.log("okay")
         }
-        return items ; 
-        localStorage.setItem("list",JSON.stringify(items));
-    })
-
+        return item; // Return the item (modified or not)
+    });
+    localStorage.setItem("list", JSON.stringify(items)); // Save the updated items back to localStorage
 }
+
 function getlocalstorage(){
     return(
     localStorage.getItem("list")?
@@ -131,6 +136,11 @@ function getlocalstorage(){
 function setBackToDefault(){
     addlist.value="";
     editID = "";
+    submit_button.textContent ="Add Task"; 
+editFlag= false  ;
+editElement="";
+
+
 
     
 
@@ -146,7 +156,7 @@ editID= element.getAttribute('id');
 editFlag= true  ;
 submit_button.textContent= "update";
 
-
+update(editElement);
 
 }
 
@@ -189,8 +199,6 @@ deletes.addEventListener('click',deletefunction);
 list.appendChild(todo_item);
 
 }
-
-
 
 
 
