@@ -1,7 +1,7 @@
 // select item
 const alert = document.getElementById('alert');
 const addlist = document.getElementById('addlist');
-const submit_button = document.getElementsByClassName('submit-button');
+const submit_button = document.querySelector('.submit-button');
 const clear = document.getElementById('clear');
 const form = document.querySelector('.todolistform')
 const list = document.querySelector('.todo-list');
@@ -20,6 +20,7 @@ clear.addEventListener("click", function(){
     const remove = document.querySelectorAll('.todo-item');
     remove.forEach(function(items){
         list.removeChild(items);
+        localStorage.removeItem("list");
     });
 });
 function additem(e){
@@ -56,14 +57,14 @@ list.appendChild(todo_item);
                         //set back to default
 
             
-   
-        
+    addToLocalStorage(id,addlist.value) 
    alerts("items added","success");
    setBackToDefault();
 
     }
     
     else if(value && editFlag===true){
+        editElement = addlist.value;
 
 
      
@@ -77,19 +78,20 @@ list.appendChild(todo_item);
     }
 
     //function
-    function alerts(text,action){
-        alert.textContent = text ;
-        alert.classList.add(`alert-${action}`);
-        console.log(alert.getAttribute('class'));
-
-        // settimeout 
-        setTimeout(function(){
-            alert.textContent="";
-            alert.classList.toggle(`alert-${action}`);
-        },60);
-    }
+ 
 
   
+}
+function alerts(text,action){
+    alert.textContent = text ;
+    alert.classList.add(`alert-${action}`);
+    console.log(alert.getAttribute('class'));
+
+    // settimeout 
+    setTimeout(function(){
+        alert.textContent="";
+        alert.classList.toggle(`alert-${action}`);
+    },60);
 }
 
 
@@ -98,11 +100,34 @@ list.appendChild(todo_item);
 
 //local storage 
  function addToLocalStorage(id,value){
+    const todolists = {id, value};
+    let items = getlocalstorage();
+
+    items.push(todolists);
+    localStorage.setItem("list",JSON.stringify(items));
+
 
 }
 
-function removeFromLocalStorage(){
-    
+function removeFromLocalStorage(id){
+    let items =getlocalstorage();
+    items = items.filter(function(item){
+        if(item.id!==id){
+            return id 
+        }
+    });
+    localStorage.setItem("list",JSON.stringify(items));
+
+
+}
+function editlocalstorage(){
+
+}
+function getlocalstorage(){
+    return(
+    localStorage.getItem("list")?
+    JSON.parse(localStorage.getItem("list")):
+    []);
 }
 
 
@@ -117,13 +142,27 @@ function setBackToDefault(){
 
 
 //edit 
-function editfunction(){
-console.log("item edited");
+function editfunction(e){
+const element = e.currentTarget.parentElement.parentElement;
+editElement = e.currentTarget.parentElement.previousElementSibling ; 
+addlist.value = editElement.textContent;
+editID= element.getAttribute('id');
+editFlag= true  ;
+submit_button.textContent= "update";
+
+
+
 }
 
 function deletefunction(e){
  const element = e.currentTarget.parentElement.parentElement;
  list.removeChild(element);
+ const id = element.getAttribute('id');
+ removeFromLocalStorage(id);
+
+ setBackToDefault();
+ alerts("data deleted", "danger");
+
    
 }
 
