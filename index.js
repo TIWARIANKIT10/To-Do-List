@@ -6,7 +6,15 @@ const clear = document.getElementById('clear');
 const form = document.querySelector('.todolistform')
 const list = document.querySelector('.todo-list');
 
-
+//dom loaded
+window.addEventListener("DOMContentLoaded",function(){
+    let  itemse  = getlocalstorage('list');
+    if(itemse.length>0){
+        itemse.map(function(item){
+            createlistitems(item.id,item.value)
+        })
+    }
+})
 //edit option 
 let editElement ;
 let editFlag = false ;
@@ -29,28 +37,8 @@ function additem(e){
     const id = new Date().getTime().toString();
 
     if(value && editFlag=== false){
-        
-        const todo_item = document.createElement('article');
-        todo_item.classList.add('todo-item');
-        todo_item.setAttribute('id', id);
-        todo_item.innerHTML =`<p class="title">${addlist.value}</p>
-                <div class="btn-container">
-                    <button type="button" class="edit-btn">
-                        <i class="fas fa-edit">edit</i>
-                    </button>
-                    <button type="button" class="delete-btn">
-                        <i class="fas fa-delete">delete</i>`;
-                      
-
-   const  edit  = todo_item.querySelector('.edit-btn'); 
-const deletes = todo_item.querySelector('.delete-btn');
-
-edit.addEventListener("click", editfunction); 
-deletes.addEventListener('click',deletefunction);
-
-//append child
-list.appendChild(todo_item);
-
+        createlistitems(id, value)
+      
                         //add to local storage 
 
 
@@ -68,7 +56,7 @@ list.appendChild(todo_item);
 
 
      
-        
+        editlocalstorage(id,additem.value);
      alerts("items edited","success");
 
     }
@@ -120,7 +108,15 @@ function removeFromLocalStorage(id){
 
 
 }
-function editlocalstorage(){
+function editlocalstorage(id,value){
+    let items = getlocalstorage();
+    items = items.map( function(item){
+        if(item.id==id){
+    item.value = value;
+        }
+        return items ; 
+        localStorage.setItem("list",JSON.stringify(items));
+    })
 
 }
 function getlocalstorage(){
@@ -167,7 +163,32 @@ function deletefunction(e){
 }
 
 
+// 
+function createlistitems(id, value){
 
+  
+    const todo_item = document.createElement('article');
+    todo_item.classList.add('todo-item');
+    todo_item.setAttribute('id', id);
+    todo_item.innerHTML =`<p class="title">${value}</p>
+            <div class="btn-container">
+                <button type="button" class="edit-btn">
+                    <i class="fas fa-edit">edit</i>
+                </button>
+                <button type="button" class="delete-btn">
+                    <i class="fas fa-delete">delete</i>`;
+                  
+
+const  edit  = todo_item.querySelector('.edit-btn'); 
+const deletes = todo_item.querySelector('.delete-btn');
+
+edit.addEventListener("click", editfunction); 
+deletes.addEventListener('click',deletefunction);
+
+//append child
+list.appendChild(todo_item);
+
+}
 
 
 
